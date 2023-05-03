@@ -78,7 +78,7 @@ namespace Battleship
                 {
                     int index = cell_list.Length - 1;
                     if (index < 0) {  index = 0; };
-                    cell_list.Insert(index, (cell.Code + ", "));
+                    cell_list.Insert(index, (cell.code + ", "));
                 }
             }
 
@@ -99,7 +99,7 @@ namespace Battleship
         public void PlayerPlaceShipSeq()
         {
             Ship ship = new(4, "Battleship");
-            ships.Append(ship);
+            /// ships.Append(ship);
 
             /// the following lines are spaced out for readability 
 
@@ -116,7 +116,7 @@ namespace Battleship
             var response4 = GetCoordinate();
 
             string[] coordinates = { response1, response2, response3, response4 };
-            PlaceShip(coordinates);
+            PlaceShip(coordinates, ship);
         }
 
         /// <summary>
@@ -125,9 +125,8 @@ namespace Battleship
         /// <param name="coordinates">
         /// an array of string coordinate names that represent where the ship will be placed
         /// <param>
-        private void PlaceShip(string[] coordinates)
+        private void PlaceShip(string[] coordinates, Ship ship)
         {
-            /// return true;
             /// translate coordinates to Cell items
             /// confirm valid placements
             /// handle valid placements gven in non-sequential order
@@ -137,11 +136,25 @@ namespace Battleship
             ///   - placements where the ship is pieced up and placed around the map (fragmented ships)
             ///   - too few coordinates given (short)
 
-            if (coordinates.Length != ships.Last().length) { throw new ArgumentException("Number of coordinates provided doesn't match the ship's length."); }
+            if (coordinates.Length != ship.length) { throw new ArgumentException("Number of coordinates provided doesn't match the ship's length."); }
             // check for placements being successive
-            // check for placements being valid
-            // after that...
-            // assign cells to coordinates (DO NOT CREATE)
+            foreach (string coordinate in coordinates)
+            {
+                var cellPoss = cells.Where(cell => cell.code == coordinate);
+                if (cellPoss.Count() == 0)
+                {
+                    Console.WriteLine($"Cell {coordinate} couldn't be found.");
+                }
+                else
+                {
+                    Cell selectedCell = cellPoss.First();
+                    bool placed = selectedCell.PlaceShip();
+                    if (placed & player.human)
+                    {
+                        Console.WriteLine($"{ship.name} placed at {coordinate}.");
+                    }
+                }
+            }
         }
 
         /// <summary>

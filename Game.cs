@@ -39,7 +39,7 @@ namespace Battleship
                 // run game code
                 ++turn;
                 Console.WriteLine($"Available cells: {Player1.board.AvailableCells()}");
-                // Player1._winner = true;
+                Player1.winner = true;
             }
 
             if (Player1.winner)

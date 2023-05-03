@@ -45,11 +45,6 @@ namespace Battleship
             }
         }
 
-        public string Code
-        { 
-            get { return this.code; }
-        }
-
         public bool IsAvailable()
         {
             if (status != "open") { return false; }
