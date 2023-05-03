@@ -141,9 +141,9 @@ namespace Battleship
             foreach (string coordinate in coordinates)
             {
                 var cellPoss = cells.Where(cell => cell.code == coordinate);
-                if (cellPoss.Count() == 0)
+                if (!cellPoss.Any())
                 {
-                    Console.WriteLine($"Cell {coordinate} couldn't be found.");
+                    Console.WriteLine($"Cell {coordinate} couldn't be found."); // this checks for whether the Cell exists
                 }
                 else
                 {
