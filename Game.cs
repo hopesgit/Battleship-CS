@@ -10,8 +10,8 @@ namespace Battleship
     internal class Game
     {
         public string Name = "Battleship";
-        public Player Player1 = new Player(human: true); // create player 1
-        public Player Player2 = new Player(human: false); // create player 2
+        public Player Player1 = new(human: true); // create player 1
+        public Player Player2 = new(human: false); // create player 2
 
         public void Setup() // the method name here doesn't matter
         {
@@ -20,7 +20,7 @@ namespace Battleship
             Player1.UpdateName(playername); // update p1's name
             Player2.UpdateName(); // update p2's name
             Console.WriteLine($"Greetings, {playername}. \nStarting {Name}...");
-            Console.WriteLine($"You will be playing with {Player2._name}.");
+            Console.WriteLine($"You will be playing with {Player2.name}.");
             Player1.Board.PlaceShipSeq();
         }
 
@@ -34,22 +34,22 @@ namespace Battleship
         {
             int turn = 0;
             string winnername = "";
-            while (Player1._winner.Equals(false) && Player2._winner.Equals(false) && turn < 100)
+            while (Player1.winner.Equals(false) && Player2.winner.Equals(false) && turn < 100)
             {
                 // run game code
                 ++turn;
-                Console.WriteLine($"Available cells: {Player1._board.AvailableCells()}");
+                Console.WriteLine($"Available cells: {Player1.board.AvailableCells()}");
                 // Player1._winner = true;
             }
 
-            if (Player1._winner)
+            if (Player1.winner)
             {
-                winnername = Player1._name;
+                winnername = Player1.name;
                 Console.WriteLine($"A winner is you, {winnername}!");
             }
-            else if (Player2._winner)
+            else if (Player2.winner)
             {
-                winnername = Player2._name;
+                winnername = Player2.name;
                 Console.WriteLine($"A winner is you, {winnername}!");
             }
             else

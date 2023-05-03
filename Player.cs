@@ -9,28 +9,27 @@ namespace Battleship
 {
     internal class Player
     {
-        public string _name;
-        public bool _human;
-        public bool _winner;
-        public Board _board;
+        public string name;
+        public bool human;
+        public bool winner = false;
+        public Board board;
 
         public Player(bool human)
         {
             if (human.Equals(true) || human.Equals(false))
             {
-                _human = human;
+                this.human = human;
                 switch(human)
                 {
                     case true:
-                        _name = "Player1";
+                        this.name = "Player1";
                         break;
 
                     case false:
                         UpdateName();
                         break;
                 }
-                _board = new Board(height: 4, width: 4, this);
-                _winner = false;
+                this.board = new Board(height: 4, width: 4, this);
             }
             else
             {
@@ -44,17 +43,17 @@ namespace Battleship
             Random rand = new Random();
             int index = rand.Next(4);
             string name = array.GetValue(index).ToString();
-            _name = name;
+            this.name = name;
         }
 
         public void UpdateName(string name)
         {
-            _name = name;
+            this.name = name;
         }
 
         public Board Board
         {
-            get { return _board; }
+            get { return board; }
         }
     }
 }

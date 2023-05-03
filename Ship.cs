@@ -8,14 +8,14 @@ namespace Battleship
 {
     internal class Ship
     {
-        public int _length;
-        public string _name;
-        public Cell[] _cells = Array.Empty<Cell>();
+        public int length;
+        public string name;
+        public Cell[] cells = Array.Empty<Cell>();
 
         public Ship(int length, string name)
         {
-            _length = length;
-            _name = name;
+            this.length = length;
+            this.name = name;
         }
 
         public void Place(string[] points)
@@ -23,6 +23,6 @@ namespace Battleship
             // Console.WriteLine("Please choose your first point.");
         }
 
-        public string Name { get { return _name; } }
+        public string Name { get { return name; } }
     }
 }

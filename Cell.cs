@@ -8,20 +8,20 @@ namespace Battleship
 {
     internal class Cell
     {
-        public string _code;
-        public string _status = "open";
+        public string code;
+        public string status = "open";
 
         public Cell(string name)
         {
-            _code = name;
+            this.code = name;
         }
 
         public bool PlaceShip()
         {
-            switch(_status)
+            switch(status)
             {
                 case "open":
-                    _status = "ship";
+                    status = "ship";
                     return true;
                 default:
                     return false;
@@ -30,14 +30,14 @@ namespace Battleship
 
         public void Fire()
         {
-            switch (_status)
+            switch (status)
             {
                 case "open":
-                    _status = "miss";
+                    status = "miss";
                     break;
 
                 case "ship":
-                    _status = "hit";
+                    status = "hit";
                     break;
 
                 default:
@@ -47,12 +47,12 @@ namespace Battleship
 
         public string Code
         { 
-            get { return _code; }
+            get { return this.code; }
         }
 
         public bool IsAvailable()
         {
-            if (_status != "open") { return false; }
+            if (status != "open") { return false; }
             else { return true; }
         }
     }
