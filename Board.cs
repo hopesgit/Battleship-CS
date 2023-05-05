@@ -70,20 +70,19 @@ namespace Battleship
 
         public string AvailableCells()
         {
-            string cell_list = "";
+            string codeList = "";
 
+            var cellPoss = cells.Where(x => x.status == "open");
             foreach (Cell cell in cells)
             {
-                if (cell.IsAvailable())
+                if ( cellPoss.Contains(cell) ) 
                 {
-                    int index = cell_list.Length - 1;
-                    if (index < 0) {  index = 0; };
-                    cell_list.Insert(index, (cell.code + ", "));
+                    codeList += $"{cell.code} ";
                 }
             }
 
-            if (cell_list.Equals(String.Empty)) { cell_list = "None"; }
-            return cell_list;
+            if (!codeList.Any()) { return "None"; }
+            return codeList;
         }
 
         /// <summary>
@@ -97,7 +96,9 @@ namespace Battleship
             // todo: add cpu ship picking
         }
 
-        public void PlayerPlaceShipSeq() // todo: add ship argument
+        public void PlayerPlaceShipSeq() 
+            // todo: add ship argument
+            // once the ship argument is added, it should no longer create one
         {
             Ship ship = new(4, "Battleship");
 
