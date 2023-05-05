@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Battleship
@@ -23,6 +24,7 @@ namespace Battleship
             this.width = width;
             this.player = player;
             
+            // everything below this HAS to be able to be refactored
             Array alphabet = new string[26] {
                 "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
                 "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
@@ -81,7 +83,7 @@ namespace Battleship
                 }
             }
 
-            if (!codeList.Any()) { return "None"; }
+            if (codeList.Equals("")) { return "None"; }
             return codeList;
         }
 
@@ -92,7 +94,7 @@ namespace Battleship
         public void PlaceShipSeq()
         {
             if (Owner.human) { PlayerPlaceShipSeq(); }
-            // else { CPUPlaceShipSeq(); }
+            else { CPUPlaceShipSeq(); }
             // todo: add cpu ship picking
         }
 
@@ -185,6 +187,36 @@ namespace Battleship
             }
             Console.WriteLine($"Response corrected to \"{coordinate}\".");
             return coordinate;
+        }
+
+        public void CPUPlaceShipSeq()
+        {
+            // No.	Class of ship	Size
+            // 1   Carrier          5
+            // 2   Battleship       4
+            // 3   Cruiser          3
+            // 4   Submarine        3
+            // 5   Destroyer        2
+
+            Ship battleship = new(4, "Battleship");
+            Ship patrol = new(2, "Patrol Boat");
+            Ship carrier = new(5, "Aircraft Carrier");
+            Ship cruiser = new(3, "Cruiser");
+            Ship submarine = new(3, "Submarine");
+
+            // for now I'm just going to place them in hardcoded spots
+
+            string[] carrierCoords = new string[] { "A1", "B1", "C1", "D1", "E1" };
+            string[] battleshipCoords = new string[] { "A2", "A3", "A4", "A5" };
+            string[] cruiserCoords = new string[] { "B2", "B3", "B4" };
+            string[] submarineCoords = new string[] {"D2", "D3", "D4"};
+            string[] patrolCoords = new string[] { "D5", "E5" };
+
+            PlaceShip(battleshipCoords, battleship);
+            PlaceShip(patrolCoords, patrol);
+            PlaceShip(carrierCoords, carrier);
+            PlaceShip(cruiserCoords, cruiser); 
+            PlaceShip(submarineCoords, submarine);
         }
     }
 }

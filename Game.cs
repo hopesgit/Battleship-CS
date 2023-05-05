@@ -25,6 +25,7 @@ namespace Battleship
             Console.WriteLine($"Greetings, {playername}. \nStarting {Name}...");
             Console.WriteLine($"You will be playing with {Player2.name}.");
             Player1.Board.PlaceShipSeq();
+            Player2.Board.PlaceShipSeq();
         }
 
         public void Load()

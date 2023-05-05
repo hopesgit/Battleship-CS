@@ -24,7 +24,7 @@ namespace Battleship
             {
                 this.name = "Player1";
             }
-            this.board = new Board(height: 4, width: 4, this);
+            this.board = new Board(height: 5, width: 5, this);
         }
 
         public string UpdateName()
