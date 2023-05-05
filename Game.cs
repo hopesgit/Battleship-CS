@@ -72,7 +72,7 @@ namespace Battleship
         private void PlayerTurn()
         {
             Console.WriteLine($"{Player1.name}, please enter a cell to fire upon.");
-            Console.WriteLine($"These spots are open to be fired upon: {Player2.Board.PossibleTargets()}");
+            Console.WriteLine($"These spots are open to be fired upon: {Player2.Board.PossibleTargets()}"); // this reports an array instead of the coords
             Player2.Board.Fire();
         }
 

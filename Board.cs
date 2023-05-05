@@ -250,8 +250,9 @@ namespace Battleship
             {
                 cell.Fire();
                 Console.WriteLine($"It was a {cell.status}!");
-                Ship ship = cell.ship;
-                if (ship != null & ship.sunk) { Console.WriteLine($"You sank my {ship.name}!"); }
+                Ship? ship = cell.ship;
+                bool sunk = ship?.sunk ?? false;
+                if (ship != null & sunk) { Console.WriteLine($"You sank my {ship.name}!"); }
             }
         }
 
@@ -272,8 +273,9 @@ namespace Battleship
             {
                 cell.Fire();
                 Console.WriteLine($"It was a {cell.status}!");
-                Ship ship = cell.ship;
-                if (ship != null & ship.sunk) { Console.WriteLine($"You sank my {ship.name}!"); }
+                Ship? ship = cell.ship;
+                bool sunk = ship?.sunk ?? false;
+                if (cell.status == "hit" & sunk) { Console.WriteLine($"You sank my {ship.name}!"); } // this fails if it's a miss
             }
         }
     }
