@@ -70,6 +70,10 @@ namespace Battleship
             get { return player; } 
         }
 
+        /// <summary>
+        /// Calculates the cells that the user COULD place a ship into.
+        /// </summary>
+        /// <returns>A string with all of the valid cell codes.</returns>
         public string AvailableCells()
         {
             string codeList = "";
@@ -88,6 +92,21 @@ namespace Battleship
         }
 
         /// <summary>
+        /// A list of cells that the opponent could target on this board. 
+        /// </summary>
+        /// <returns>The codes for each possible cell that could be fired upon, as a string array.</returns>
+        public string[] PossibleTargets()
+        {
+            List<string> holder = new List<string>();
+            var allCells = cells.Where(x => x.ValidTarget());
+            foreach (Cell cell in allCells)
+            {
+                holder.Add(cell.code);
+            }
+            return holder.ToArray();
+        }
+
+        /// <summary>
         /// Summons either the player or CPU ship placement routines. 
         /// If the player who owns this board is human, the human routine is called.
         /// </summary>
@@ -95,13 +114,13 @@ namespace Battleship
         {
             if (Owner.human) { PlayerPlaceShipSeq(); }
             else { CPUPlaceShipSeq(); }
-            // todo: add cpu ship picking
         }
 
         public void PlayerPlaceShipSeq() 
             // todo: add ship argument
             // once the ship argument is added, it should no longer create one
         {
+            AvailableCells();
             Ship ship = new(4, "Battleship");
 
             Console.WriteLine($"Please choose the first coordinate for your {ship.Name}: ");
@@ -138,7 +157,7 @@ namespace Battleship
             //   - too few coordinates given (short)
 
             if (coordinates.Length != ship.length) { throw new ArgumentException("Number of coordinates provided doesn't match the ship's length."); }
-            // check for placements being successive
+            // todo: check for placements being successive
             foreach (string coordinate in coordinates)
             {
                 var cellPoss = cells.Where(cell => cell.code == coordinate);
@@ -146,12 +165,12 @@ namespace Battleship
                 {
                     Console.WriteLine($"Cell {coordinate} couldn't be found."); // this checks for whether the Cell exists
                     // need to figure out what to do with this
-                    // repeat the whole ship placement chain
+                    // todo: repeat the whole ship placement chain
                 }
                 else
                 {
                     Cell selectedCell = cellPoss.First();
-                    bool placed = selectedCell.PlaceShip();
+                    bool placed = selectedCell.PlaceShip(ship);
                     if (placed & player.human)
                     {
                         Console.WriteLine($"{ship.name} placed at {coordinate}.");
@@ -190,14 +209,8 @@ namespace Battleship
         }
 
         public void CPUPlaceShipSeq()
+            // todo: code this more flexibly
         {
-            // No.	Class of ship	Size
-            // 1   Carrier          5
-            // 2   Battleship       4
-            // 3   Cruiser          3
-            // 4   Submarine        3
-            // 5   Destroyer        2
-
             Ship battleship = new(4, "Battleship");
             Ship patrol = new(2, "Patrol Boat");
             Ship carrier = new(5, "Aircraft Carrier");
@@ -217,6 +230,51 @@ namespace Battleship
             PlaceShip(carrierCoords, carrier);
             PlaceShip(cruiserCoords, cruiser); 
             PlaceShip(submarineCoords, submarine);
+        }
+
+        public void Fire()
+        {
+            string response = GetCoordinate();
+            Cell? cell = cells.Where(x => x.code == response).FirstOrDefault();
+            if (cell == null) 
+            {
+                Console.WriteLine("Cell not found. Please try again. ");
+                Fire();
+            }
+            else if (cell != null & !cell.ValidTarget()) 
+            {
+                Console.WriteLine("Cell has already been struck. Please try another. ");
+                Fire();
+            }
+            else
+            {
+                cell.Fire();
+                Console.WriteLine($"It was a {cell.status}!");
+                Ship ship = cell.ship;
+                if (ship != null & ship.sunk) { Console.WriteLine($"You sank my {ship.name}!"); }
+            }
+        }
+
+        public void Fire(string coordinate)
+        {
+            Cell? cell = cells.Where(x => x.code == coordinate).FirstOrDefault();
+            if (cell == null)
+            {
+                Console.WriteLine("Cell not found. Please try again. ");
+                Fire();
+            }
+            else if (cell != null & !cell.ValidTarget())
+            {
+                Console.WriteLine("Cell has already been struck. Please try another. ");
+                Fire();
+            }
+            else
+            {
+                cell.Fire();
+                Console.WriteLine($"It was a {cell.status}!");
+                Ship ship = cell.ship;
+                if (ship != null & ship.sunk) { Console.WriteLine($"You sank my {ship.name}!"); }
+            }
         }
     }
 }

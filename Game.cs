@@ -45,10 +45,9 @@ namespace Battleship
             string winnername = "";
             while (Player1.winner.Equals(false) && Player2.winner.Equals(false) && turn < 100)
             {
-                // run game code
                 ++turn;
-                Console.WriteLine($"Available cells: {Player1.board.AvailableCells()}");
-                Player1.winner = true;
+                PlayerTurn();
+                CPUTurn();
             }
 
             if (Player1.winner)
@@ -65,6 +64,29 @@ namespace Battleship
             {
                 Console.WriteLine("Game time exceeded. Stalemate called. Please try again.");
             }
+        }
+
+        /// <summary>
+        /// Logic for the player's turn. The player always goes before the CPU. 
+        /// </summary>
+        private void PlayerTurn()
+        {
+            Console.WriteLine($"{Player1.name}, please enter a cell to fire upon.");
+            Console.WriteLine($"These spots are open to be fired upon: {Player2.Board.PossibleTargets()}");
+            Player2.Board.Fire();
+        }
+
+        /// <summary>
+        /// Logic for the CPU's turn. The CPU always goes after the player.
+        /// </summary>
+        private void CPUTurn()
+        {
+            Console.WriteLine("The CPU is taking its turn...");
+            string[] targets = Player1.Board.PossibleTargets();
+            Random rand = new();
+            int index = rand.Next(targets.Length);
+            string selected = targets.GetValue(index).ToString();
+            Player1.Board.Fire(selected);
         }
     }
 }
