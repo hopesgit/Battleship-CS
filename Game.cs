@@ -13,10 +13,13 @@ namespace Battleship
         public Player Player1 = new(human: true); // create player 1
         public Player Player2 = new(human: false); // create player 2
 
-        public void Setup() // the method name here doesn't matter
+        /// <summary>
+        /// Sets up the game. Creates the necessary Player and Board objects, as well as asking the player for their name.
+        /// </summary>
+        public void Setup()
         {
             Console.WriteLine("Welcome! Please give me your name: "); // asks for name
-            string playername = Console.ReadLine().Trim(); // name input, trims off whitespace
+            string playername = Console.ReadLine().Trim(); // name input, trims off whitespace. I also don't really care if it's null
             Player1.UpdateName(playername); // update p1's name
             Player2.UpdateName(); // update p2's name
             Console.WriteLine($"Greetings, {playername}. \nStarting {Name}...");
@@ -30,7 +33,12 @@ namespace Battleship
             Run();
         }
 
-        private void Run()
+        /// <summary>
+        /// The meat of the game is here. This runs the turn functions. 
+        /// </summary>
+        private void Run() 
+            // todo: break the turn functionality out into its own method
+            // todo: break the win condition functionality out into its own method
         {
             int turn = 0;
             string winnername = "";
@@ -56,7 +64,6 @@ namespace Battleship
             {
                 Console.WriteLine("Game time exceeded. Stalemate called. Please try again.");
             }
-
         }
     }
 }

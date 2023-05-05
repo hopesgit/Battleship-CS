@@ -15,7 +15,7 @@ namespace Battleship
         public int height = 0;
         public int width = 0;
         public Player player;
-        public Ship[] ships = Array.Empty<Ship>();
+        public List<Ship> ships = new();
 
         public Board(int height, int width, Player player)
         {
@@ -94,14 +94,12 @@ namespace Battleship
         {
             if (Owner.human) { PlayerPlaceShipSeq(); }
             // else { CPUPlaceShipSeq(); }
+            // todo: add cpu ship picking
         }
 
-        public void PlayerPlaceShipSeq()
+        public void PlayerPlaceShipSeq() // todo: add ship argument
         {
             Ship ship = new(4, "Battleship");
-            /// ships.Append(ship);
-
-            /// the following lines are spaced out for readability 
 
             Console.WriteLine($"Please choose the first coordinate for your {ship.Name}: ");
             var response1 = GetCoordinate();
@@ -127,14 +125,14 @@ namespace Battleship
         /// <param>
         private void PlaceShip(string[] coordinates, Ship ship)
         {
-            /// translate coordinates to Cell items
-            /// confirm valid placements
-            /// handle valid placements gven in non-sequential order
-            /// handle invalid placements:
-            ///   - off-grid placements (nonexistent)
-            ///   - placements attempting to wrap around the map (split ships)
-            ///   - placements where the ship is pieced up and placed around the map (fragmented ships)
-            ///   - too few coordinates given (short)
+            // match up coordinates with Cell items
+            // confirm valid placements
+            // handle valid placements gven in non-sequential order
+            // handle invalid placements:
+            //   - off-grid placements (nonexistent)
+            //   - placements attempting to wrap around the map (split ships)
+            //   - placements where the ship is pieced up and placed around the map (fragmented ships)
+            //   - too few coordinates given (short)
 
             if (coordinates.Length != ship.length) { throw new ArgumentException("Number of coordinates provided doesn't match the ship's length."); }
             // check for placements being successive
@@ -144,6 +142,8 @@ namespace Battleship
                 if (!cellPoss.Any())
                 {
                     Console.WriteLine($"Cell {coordinate} couldn't be found."); // this checks for whether the Cell exists
+                    // need to figure out what to do with this
+                    // repeat the whole ship placement chain
                 }
                 else
                 {
@@ -155,6 +155,8 @@ namespace Battleship
                     }
                 }
             }
+
+            ships.Add( ship ); // adding the ship to the ships list for the board certifies that it has been placed correctly
         }
 
         /// <summary>
@@ -165,12 +167,14 @@ namespace Battleship
         /// </returns>
         private static string GetCoordinate()
         {
-            string response = Console.ReadLine();
+            string? response = Console.ReadLine();
             InputSanitizer sanit = new();
             string coordinate = String.Empty;
             try 
             { 
+#pragma warning disable CS8604 // Possible null reference argument.
                 string corrected_coordinate = sanit.CoordinateInput(response); 
+#pragma warning restore CS8604 // Possible null reference argument.
                 coordinate = corrected_coordinate;
             }
             catch (ArgumentException ex)

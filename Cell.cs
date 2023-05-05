@@ -47,8 +47,8 @@ namespace Battleship
 
         public bool IsAvailable()
         {
-            if (status != "open") { return false; }
-            else { return true; }
+            if (status == "open") { return true; }
+            else { return false; }
         }
     }
 }

@@ -16,34 +16,23 @@ namespace Battleship
 
         public Player(bool human)
         {
-            if (human.Equals(true) || human.Equals(false))
+            this.human = human;
+            if (!human)
             {
-                this.human = human;
-                switch(human)
-                {
-                    case true:
-                        this.name = "Player1";
-                        break;
-
-                    case false:
-                        UpdateName();
-                        break;
-                }
-                this.board = new Board(height: 4, width: 4, this);
-            }
-            else
+                this.name = UpdateName();
+            } else
             {
-                throw new ArgumentException(message: "Human must be a boolean.");
+                this.name = "Player1";
             }
+            this.board = new Board(height: 4, width: 4, this);
         }
 
-        public void UpdateName()
+        public string UpdateName()
         {
             Array array = new string[4] { "Bethany", "Mona", "Eric", "Alexander" };
-            Random rand = new Random();
-            int index = rand.Next(4);
-            string name = array.GetValue(index).ToString();
-            this.name = name;
+            Random rand = new();
+            int index = rand.Next(array.Length);
+            return array.GetValue(index).ToString();
         }
 
         public void UpdateName(string name)

@@ -18,10 +18,10 @@ namespace Battleship
             this.name = name;
         }
 
-        public void Place(string[] points)
-        {
-            // Console.WriteLine("Please choose your first point.");
-        }
+        //public void Place(string[] points)
+        //{
+        //    // Console.WriteLine("Please choose your first point.");
+        //}
 
         public string Name { get { return name; } }
     }
