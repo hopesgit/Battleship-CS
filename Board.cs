@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Battleship
@@ -15,7 +16,7 @@ namespace Battleship
         public int height = 0;
         public int width = 0;
         public Player player;
-        public Ship[] ships = Array.Empty<Ship>();
+        public List<Ship> ships = new();
 
         public Board(int height, int width, Player player)
         {
@@ -23,6 +24,7 @@ namespace Battleship
             this.width = width;
             this.player = player;
             
+            // everything below this HAS to be able to be refactored
             Array alphabet = new string[26] {
                 "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
                 "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
@@ -68,22 +70,40 @@ namespace Battleship
             get { return player; } 
         }
 
+        /// <summary>
+        /// Calculates the cells that the user COULD place a ship into.
+        /// </summary>
+        /// <returns>A string with all of the valid cell codes.</returns>
         public string AvailableCells()
         {
-            string cell_list = "";
+            string codeList = "";
 
+            var cellPoss = cells.Where(x => x.status == "open");
             foreach (Cell cell in cells)
             {
-                if (cell.IsAvailable())
+                if ( cellPoss.Contains(cell) ) 
                 {
-                    int index = cell_list.Length - 1;
-                    if (index < 0) {  index = 0; };
-                    cell_list.Insert(index, (cell.Code + ", "));
+                    codeList += $"{cell.code} ";
                 }
             }
 
-            if (cell_list.Equals(String.Empty)) { cell_list = "None"; }
-            return cell_list;
+            if (codeList.Equals("")) { return "None"; }
+            return codeList;
+        }
+
+        /// <summary>
+        /// A list of cells that the opponent could target on this board. 
+        /// </summary>
+        /// <returns>The codes for each possible cell that could be fired upon, as a string array.</returns>
+        public string[] PossibleTargets()
+        {
+            List<string> holder = new List<string>();
+            var allCells = cells.Where(x => x.ValidTarget());
+            foreach (Cell cell in allCells)
+            {
+                holder.Add(cell.code);
+            }
+            return holder.ToArray();
         }
 
         /// <summary>
@@ -93,15 +113,15 @@ namespace Battleship
         public void PlaceShipSeq()
         {
             if (Owner.human) { PlayerPlaceShipSeq(); }
-            // else { CPUPlaceShipSeq(); }
+            else { CPUPlaceShipSeq(); }
         }
 
-        public void PlayerPlaceShipSeq()
+        public void PlayerPlaceShipSeq() 
+            // todo: add ship argument
+            // once the ship argument is added, it should no longer create one
         {
+            AvailableCells();
             Ship ship = new(4, "Battleship");
-            ships.Append(ship);
-
-            /// the following lines are spaced out for readability 
 
             Console.WriteLine($"Please choose the first coordinate for your {ship.Name}: ");
             var response1 = GetCoordinate();
@@ -116,7 +136,7 @@ namespace Battleship
             var response4 = GetCoordinate();
 
             string[] coordinates = { response1, response2, response3, response4 };
-            PlaceShip(coordinates);
+            PlaceShip(coordinates, ship);
         }
 
         /// <summary>
@@ -125,23 +145,40 @@ namespace Battleship
         /// <param name="coordinates">
         /// an array of string coordinate names that represent where the ship will be placed
         /// <param>
-        private void PlaceShip(string[] coordinates)
+        private void PlaceShip(string[] coordinates, Ship ship)
         {
-            /// return true;
-            /// translate coordinates to Cell items
-            /// confirm valid placements
-            /// handle valid placements gven in non-sequential order
-            /// handle invalid placements:
-            ///   - off-grid placements (nonexistent)
-            ///   - placements attempting to wrap around the map (split ships)
-            ///   - placements where the ship is pieced up and placed around the map (fragmented ships)
-            ///   - too few coordinates given (short)
+            // match up coordinates with Cell items
+            // confirm valid placements
+            // handle valid placements gven in non-sequential order
+            // handle invalid placements:
+            //   - off-grid placements (nonexistent)
+            //   - placements attempting to wrap around the map (split ships)
+            //   - placements where the ship is pieced up and placed around the map (fragmented ships)
+            //   - too few coordinates given (short)
 
-            if (coordinates.Length != ships.Last().length) { throw new ArgumentException("Number of coordinates provided doesn't match the ship's length."); }
-            // check for placements being successive
-            // check for placements being valid
-            // after that...
-            // assign cells to coordinates (DO NOT CREATE)
+            if (coordinates.Length != ship.length) { throw new ArgumentException("Number of coordinates provided doesn't match the ship's length."); }
+            // todo: check for placements being successive
+            foreach (string coordinate in coordinates)
+            {
+                var cellPoss = cells.Where(cell => cell.code == coordinate);
+                if (!cellPoss.Any())
+                {
+                    Console.WriteLine($"Cell {coordinate} couldn't be found."); // this checks for whether the Cell exists
+                    // need to figure out what to do with this
+                    // todo: repeat the whole ship placement chain
+                }
+                else
+                {
+                    Cell selectedCell = cellPoss.First();
+                    bool placed = selectedCell.PlaceShip(ship);
+                    if (placed & player.human)
+                    {
+                        Console.WriteLine($"{ship.name} placed at {coordinate}.");
+                    }
+                }
+            }
+
+            ships.Add( ship ); // adding the ship to the ships list for the board certifies that it has been placed correctly
         }
 
         /// <summary>
@@ -152,12 +189,14 @@ namespace Battleship
         /// </returns>
         private static string GetCoordinate()
         {
-            string response = Console.ReadLine();
+            string? response = Console.ReadLine();
             InputSanitizer sanit = new();
             string coordinate = String.Empty;
             try 
             { 
+#pragma warning disable CS8604 // Possible null reference argument.
                 string corrected_coordinate = sanit.CoordinateInput(response); 
+#pragma warning restore CS8604 // Possible null reference argument.
                 coordinate = corrected_coordinate;
             }
             catch (ArgumentException ex)
@@ -167,6 +206,77 @@ namespace Battleship
             }
             Console.WriteLine($"Response corrected to \"{coordinate}\".");
             return coordinate;
+        }
+
+        public void CPUPlaceShipSeq()
+            // todo: code this more flexibly
+        {
+            Ship battleship = new(4, "Battleship");
+            Ship patrol = new(2, "Patrol Boat");
+            Ship carrier = new(5, "Aircraft Carrier");
+            Ship cruiser = new(3, "Cruiser");
+            Ship submarine = new(3, "Submarine");
+
+            // for now I'm just going to place them in hardcoded spots
+
+            string[] carrierCoords = new string[] { "A1", "B1", "C1", "D1", "E1" };
+            string[] battleshipCoords = new string[] { "A2", "A3", "A4", "A5" };
+            string[] cruiserCoords = new string[] { "B2", "B3", "B4" };
+            string[] submarineCoords = new string[] {"D2", "D3", "D4"};
+            string[] patrolCoords = new string[] { "D5", "E5" };
+
+            PlaceShip(battleshipCoords, battleship);
+            PlaceShip(patrolCoords, patrol);
+            PlaceShip(carrierCoords, carrier);
+            PlaceShip(cruiserCoords, cruiser); 
+            PlaceShip(submarineCoords, submarine);
+        }
+
+        public void Fire()
+        {
+            string response = GetCoordinate();
+            Cell? cell = cells.Where(x => x.code == response).FirstOrDefault();
+            if (cell == null) 
+            {
+                Console.WriteLine("Cell not found. Please try again. ");
+                Fire();
+            }
+            else if (cell != null & !cell.ValidTarget()) 
+            {
+                Console.WriteLine("Cell has already been struck. Please try another. ");
+                Fire();
+            }
+            else
+            {
+                cell.Fire();
+                Console.WriteLine($"It was a {cell.status}!");
+                Ship? ship = cell.ship;
+                bool sunk = ship?.sunk ?? false;
+                if (ship != null & sunk) { Console.WriteLine($"You sank my {ship.name}!"); }
+            }
+        }
+
+        public void Fire(string coordinate)
+        {
+            Cell? cell = cells.Where(x => x.code == coordinate).FirstOrDefault();
+            if (cell == null)
+            {
+                Console.WriteLine("Cell not found. Please try again. ");
+                Fire();
+            }
+            else if (cell != null & !cell.ValidTarget())
+            {
+                Console.WriteLine("Cell has already been struck. Please try another. ");
+                Fire();
+            }
+            else
+            {
+                cell.Fire();
+                Console.WriteLine($"It was a {cell.status}!");
+                Ship? ship = cell.ship;
+                bool sunk = ship?.sunk ?? false;
+                if (cell.status == "hit" & sunk) { Console.WriteLine($"You sank my {ship.name}!"); } // this fails if it's a miss
+            }
         }
     }
 }

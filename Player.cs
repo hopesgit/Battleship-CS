@@ -14,43 +14,46 @@ namespace Battleship
         public bool winner = false;
         public Board board;
 
+        /// <summary>
+        /// Constructor for a Player object. Human or CPU, both are considered Players.
+        /// </summary>
         public Player(bool human)
         {
-            if (human.Equals(true) || human.Equals(false))
+            this.human = human;
+            if (!human)
             {
-                this.human = human;
-                switch(human)
-                {
-                    case true:
-                        this.name = "Player1";
-                        break;
-
-                    case false:
-                        UpdateName();
-                        break;
-                }
-                this.board = new Board(height: 4, width: 4, this);
-            }
-            else
+                this.name = UpdateName();
+            } else
             {
-                throw new ArgumentException(message: "Human must be a boolean.");
+                this.name = "Player1";
             }
+            this.board = new Board(height: 5, width: 5, this);
         }
 
-        public void UpdateName()
+        /// <summary>
+        /// Updates the computer player's name. Pass in a name string to use the other version that updates a human player's name.
+        /// </summary>
+        /// <returns>The string that will be used to rename the CPU player.</returns>
+        public string UpdateName() // this cannot be static because it then wouldn't be usable in the constructor above
         {
             Array array = new string[4] { "Bethany", "Mona", "Eric", "Alexander" };
-            Random rand = new Random();
-            int index = rand.Next(4);
-            string name = array.GetValue(index).ToString();
-            this.name = name;
+            Random rand = new();
+            int index = rand.Next(array.Length);
+            return array.GetValue(index).ToString();
         }
 
+        /// <summary>
+        /// Updates the human player's name. 
+        /// </summary>
+        /// <param name="name">The string used to update the human player's name.</param>
         public void UpdateName(string name)
         {
             this.name = name;
         }
 
+        /// <summary>
+        /// Getter for the Board object connected to this player.
+        /// </summary>
         public Board Board
         {
             get { return board; }
