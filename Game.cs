@@ -46,6 +46,7 @@ namespace Battleship
             while (Player1.winner.Equals(false) && Player2.winner.Equals(false) && turn < 100)
             {
                 ++turn;
+                Console.WriteLine($"~~~ Beginning turn {turn} ~~~");
                 PlayerTurn();
                 CPUTurn();
             }
@@ -71,11 +72,27 @@ namespace Battleship
         /// </summary>
         private void PlayerTurn()
         {
-            string[] targets = Player1.Board.PossibleTargets();
-            string targetList = "";
-            foreach (string target in targets) { targetList += $"{target} "; }
+            var summary = Player2.Board.PlayerPossibleTargets();
+            int height = Player2.Board.height;
+            int width = Player2.Board.width;
+            int i = 1;
+            string boardApprox = "|";
             Console.WriteLine($"{Player1.name}, please enter a cell to fire upon.");
-            Console.WriteLine($"These spots are open to be fired upon: {targetList}"); // this reports an array instead of the coords
+            Console.WriteLine($"Here is what you know about the opponent's board: ('O' means that you have yet to attack that cell)");
+            while (i <= (width * height)) 
+            {
+                foreach (var cell in summary) 
+                {
+                    boardApprox += $" {cell.Key}: {cell.Value} |";
+                    if (i % width == 0) 
+                    {
+                        Console.WriteLine(boardApprox);
+                        boardApprox = "|";
+                    }
+                    i++;
+                }
+            }
+
             Player2.Board.Fire();
         }
 

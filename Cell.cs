@@ -11,6 +11,7 @@ namespace Battleship
         public string code;
         public string status = "open";
         public Ship? ship;
+        public string enemyStatus = "O";
 
         /// <summary>
         /// Constructor. Create a Cell with this.
@@ -37,7 +38,7 @@ namespace Battleship
                     return true;
                 default:
                     return false;
-            }   
+            }
         }
 
         /// <summary>
@@ -58,6 +59,7 @@ namespace Battleship
                 default:
                     break;
             }
+            EnemyStatus();
         }
 
         /// <summary>
@@ -79,6 +81,19 @@ namespace Battleship
         {
             if (status == "miss" | status == "hit") { return false; }
             else return true;
+        }
+
+        /// <summary>
+        /// Setter for the "enemyStatus" class variable
+        /// </summary>
+        public void EnemyStatus()
+        {
+            enemyStatus = status switch
+            {
+                "hit" => "H",
+				"miss" => "M",
+				_ => "O",
+			};
         }
     }
 }

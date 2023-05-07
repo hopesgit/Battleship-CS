@@ -106,6 +106,17 @@ namespace Battleship
             return holder.ToArray();
         }
 
+
+        public Dictionary<string, string> PlayerPossibleTargets()
+        {
+            Dictionary<string, string> targets = new();
+            foreach (Cell cell in cells)
+            {
+                targets.Add(cell.code, cell.enemyStatus);
+            }
+            return targets;
+        }
+
         /// <summary>
         /// Summons either the player or CPU ship placement routines. 
         /// If the player who owns this board is human, the human routine is called.
