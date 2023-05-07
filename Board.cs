@@ -262,8 +262,8 @@ namespace Battleship
                 cell.Fire();
                 Console.WriteLine($"It was a {cell.status}!");
                 Ship? ship = cell.ship;
-                bool sunk = ship?.sunk ?? false;
-                if (ship != null & sunk) { Console.WriteLine($"You sank my {ship.name}!"); }
+                bool sunk = ship?.Sunk() ?? false;
+                if (ship != null & sunk) { Console.WriteLine($"You sank my {ship.name}!"); } // bug: this shows up every time a boat is hit
             }
         }
 
@@ -285,9 +285,16 @@ namespace Battleship
                 cell.Fire();
                 Console.WriteLine($"It was a {cell.status}!");
                 Ship? ship = cell.ship;
-                bool sunk = ship?.sunk ?? false;
-                if (cell.status == "hit" & sunk) { Console.WriteLine($"You sank my {ship.name}!"); } // this fails if it's a miss
+                bool sunk = ship?.Sunk() ?? false;
+                if (cell.status == "hit" & sunk) { Console.WriteLine($"You sank my {ship.name}!"); } 
             }
+        }
+
+        public bool OutOfShips()
+        {
+            var shipCheck = ships.All(x => x.sunk == true);
+            if (shipCheck == true) { return true; }
+            else { return false; }
         }
     }
 }

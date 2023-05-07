@@ -38,12 +38,9 @@ namespace Battleship
         /// The meat of the game is here. This runs the turn functions. 
         /// </summary>
         private void Run() 
-            // todo: break the turn functionality out into its own method
-            // todo: break the win condition functionality out into its own method
         {
             int turn = 0;
-            string winnername = "";
-            while (Player1.winner.Equals(false) && Player2.winner.Equals(false) && turn < 100)
+            while (turn < (Player1.Board.height * Player1.Board.width))
             {
                 ++turn;
                 Console.WriteLine($"~~~ Beginning turn {turn} ~~~");
@@ -51,20 +48,7 @@ namespace Battleship
                 CPUTurn();
             }
 
-            if (Player1.winner)
-            {
-                winnername = Player1.name;
-                Console.WriteLine($"A winner is you, {winnername}!");
-            }
-            else if (Player2.winner)
-            {
-                winnername = Player2.name;
-                Console.WriteLine($"A winner is you, {winnername}!");
-            }
-            else
-            {
-                Console.WriteLine("Game time exceeded. Stalemate called. Please try again.");
-            }
+            Console.WriteLine($"Today's win goes to {EvaluateWinner().name}!");
         }
 
         /// <summary>
@@ -108,6 +92,15 @@ namespace Battleship
             string selected = targets.GetValue(index).ToString();
             Console.WriteLine($"The CPU has chosen {selected}.");
             Player1.Board.Fire(selected);
+        }
+
+        private Player? EvaluateWinner()
+        {
+            bool p1Lose = Player1.Board.OutOfShips();
+            bool p2Lose = Player2.Board.OutOfShips();
+            if (p2Lose) { return Player1; }
+            else if (p1Lose) { return Player2; }
+            else { return null; }
         }
     }
 }
