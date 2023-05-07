@@ -106,6 +106,7 @@ namespace Battleship
             Random rand = new();
             int index = rand.Next(targets.Length);
             string selected = targets.GetValue(index).ToString();
+            Console.WriteLine($"The CPU has chosen {selected}.");
             Player1.Board.Fire(selected);
         }
     }
