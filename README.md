@@ -5,4 +5,6 @@ This is your generic Battleship clone with the purpose of helping to teach me C#
 
 There are some stretch goals/more out-there features that I may include over time. 
 
-Possible  
+Possible features:
+* Card-based ship selection
+* Card drawing with effects like ship repair, ship duplication, barriers, etc
