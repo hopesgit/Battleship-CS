@@ -19,11 +19,6 @@ namespace Battleship
             this.name = name;
         }
 
-        //public void Place(string[] points)
-        //{
-        //    // Console.WriteLine("Please choose your first point.");
-        //}
-
         /// <summary>
         /// Getter for the name instance variable.
         /// </summary>
@@ -37,8 +32,7 @@ namespace Battleship
         {
             if (sunk) { return sunk; } // return true if it's already true
             int cellCount = cells.Where(x => x.status == "hit").Count();
-            if (cellCount.Equals(cells.Length)) { this.sunk = true; } // update sunken status if sunk is false and it shouldn't be
-            // I have the feeling that this basically always returns true because the cells array doesn't get updated
+            if (cellCount.Equals(cells.Length)) { this.sunk = true; } // update sunken status if sunk is false and it should be true
             return this.sunk;
         } 
     }

@@ -45,7 +45,9 @@ namespace Battleship
                 ++turn;
                 Console.WriteLine($"~~~ Beginning turn {turn} ~~~");
                 PlayerTurn();
+                if (EvaluateWinner() is not null) { break; } 
                 CPUTurn();
+                if (EvaluateWinner() is not null) { break; }
             }
 
             Console.WriteLine($"Today's win goes to {EvaluateWinner().name}!");

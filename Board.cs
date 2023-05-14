@@ -184,7 +184,12 @@ namespace Battleship
                     bool placed = selectedCell.PlaceShip(ship);
                     if (placed & player.human)
                     {
+                        ship.cells = ship.cells.Append(selectedCell).ToArray();
                         Console.WriteLine($"{ship.name} placed at {coordinate}.");
+                    }
+                    else if (placed)
+                    {
+                        ship.cells = ship.cells.Append(selectedCell).ToArray();
                     }
                 }
             }
