@@ -158,14 +158,9 @@ namespace Battleship
         /// <param>
         private void PlaceShip(string[] coordinates, Ship ship)
         {
-            // match up coordinates with Cell items
-            // confirm valid placements
-            // handle valid placements gven in non-sequential order
             // handle invalid placements:
-            //   - off-grid placements (nonexistent)
             //   - placements attempting to wrap around the map (split ships)
             //   - placements where the ship is pieced up and placed around the map (fragmented ships)
-            //   - too few coordinates given (short)
 
             if (coordinates.Length != ship.length) { throw new ArgumentException("Number of coordinates provided doesn't match the ship's length."); }
             // todo: check for placements being successive
@@ -268,7 +263,7 @@ namespace Battleship
                 Console.WriteLine($"It was a {cell.status}!");
                 Ship? ship = cell.ship;
                 bool sunk = ship?.Sunk() ?? false;
-                if (ship != null & sunk) { Console.WriteLine($"You sank my {ship.name}!"); } // bug: this shows up every time a boat is hit
+                if (ship != null & sunk) { Console.WriteLine($"You sank my {ship.name}!"); }
             }
         }
 
