@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Data;
 
 namespace Battleship
 {
@@ -147,7 +140,8 @@ namespace Battleship
             var response4 = GetCoordinate();
 
             string[] coordinates = { response1, response2, response3, response4 };
-            PlaceShip(coordinates, ship);
+            bool placed = PlaceShip(coordinates, ship);
+            if ( !placed ) { Console.WriteLine($"{ship.name} couldn't be placed. Please try again.");  PlayerPlaceShipSeq(); } // this is another infinite loop of broken responses
         }
 
         /// <summary>
@@ -156,40 +150,77 @@ namespace Battleship
         /// <param name="coordinates">
         /// an array of string coordinate names that represent where the ship will be placed
         /// <param>
-        private void PlaceShip(string[] coordinates, Ship ship)
+        private bool PlaceShip(string[] coordinates, Ship ship)
         {
-            // handle invalid placements:
-            //   - placements attempting to wrap around the map (split ships)
-            //   - placements where the ship is pieced up and placed around the map (fragmented ships)
-
-            if (coordinates.Length != ship.length) { throw new ArgumentException("Number of coordinates provided doesn't match the ship's length."); }
-            // todo: check for placements being successive
+            // this needs refactoring
+            bool validation = true;
+            if (coordinates.Length != ship.length) { Console.WriteLine("Number of coordinates provided doesn't match the ship's length."); validation = false; }
+            if (CheckCoords(coordinates) is false) { Console.WriteLine("That ship cannot be placed in that way."); return false; }
+            
             foreach (string coordinate in coordinates)
             {
                 var cellPoss = cells.Where(cell => cell.code == coordinate);
-                if (!cellPoss.Any())
+                if (!cellPoss.Any()) { Console.WriteLine($"Cell {coordinate} couldn't be found."); return false; }
+
+                Cell selectedCell = cellPoss.First();
+                bool placed = selectedCell.PlaceShip(ship);
+                if (placed & player.human)
                 {
-                    Console.WriteLine($"Cell {coordinate} couldn't be found."); // this checks for whether the Cell exists
-                    // need to figure out what to do with this
-                    // todo: repeat the whole ship placement chain
+                    ship.cells = ship.cells.Append(selectedCell).ToArray();
+                    Console.WriteLine($"{ship.name} placed at {coordinate}.");
                 }
-                else
-                {
-                    Cell selectedCell = cellPoss.First();
-                    bool placed = selectedCell.PlaceShip(ship);
-                    if (placed & player.human)
-                    {
-                        ship.cells = ship.cells.Append(selectedCell).ToArray();
-                        Console.WriteLine($"{ship.name} placed at {coordinate}.");
-                    }
-                    else if (placed)
-                    {
-                        ship.cells = ship.cells.Append(selectedCell).ToArray();
-                    }
-                }
+                else if (placed) { ship.cells = ship.cells.Append(selectedCell).ToArray(); }
             }
 
             ships.Add( ship ); // adding the ship to the ships list for the board certifies that it has been placed correctly
+            return validation;
+        }
+
+        private bool CheckCoords(string[] coordinates)
+        {
+            List<int> indices = new();
+            foreach (string coordinate in coordinates)
+            {
+                var possibleCells = cells.Where(cell => cell.code == coordinate);
+                if (!possibleCells.Any()) { continue; } // move on to next loop if no cells found
+                Cell cellPoss = possibleCells.First();
+                
+                var index = Array.FindIndex(cells, cell => cell == cellPoss);
+                indices.Add(index);
+            }
+
+            indices.Sort();
+            indices = indices.Distinct().ToList<int>();
+            if (!indices.Any()) { Console.WriteLine("Indices empty"); return false; }
+            else if (indices.Count != coordinates.Length) { return false; }
+
+            List<int> remainders = indices.Select(item => item % width).Distinct().ToList<int>(); // this is a horizontal placement check
+            List<int> results = indices.Select(item => item / width).Distinct().ToList<int>(); // this is a vertical placement check
+
+            int columnCountCheck = 1;
+            if (remainders.Count == 1) {  columnCountCheck = 0; }
+            else if (remainders.Count == coordinates.Length) { columnCountCheck = 2; }
+
+            int rowCountCheck = 1;
+            if (results.Count == 1) {  rowCountCheck = 0; }
+            else if (results.Count == coordinates.Length) { rowCountCheck= 2; }
+
+            bool verticalCheck = columnCountCheck == 0 && rowCountCheck == 2;
+            bool horizontalCheck = columnCountCheck == 2 && rowCountCheck == 0;
+
+            int firstItem = indices.First();
+            int firstItemModulo = firstItem % width;
+            bool dummy = indices.Select((value, index) => value - index * width == firstItem).All(item => item == true);
+            bool shipVertical = indices.All(index => index % width == firstItemModulo) && ( dummy && verticalCheck); // this should check if the cells chosen are in the same column but different rows
+            bool shipHorizontal = indices.Select((value, index) => value - index == firstItem).All(item => item == true) && horizontalCheck; 
+            // this should check if the current set of coordinates are in sequence
+            // they should also all be on the same row
+
+            if (shipVertical & shipHorizontal) { return false; }
+            else if (!shipVertical & !shipHorizontal) { return false; }
+            else if (shipVertical is true) { return shipVertical; }
+            else if (shipHorizontal is true) { return shipHorizontal; }
+            else { return false; }
         }
 
         /// <summary>
