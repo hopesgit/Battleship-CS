@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Data;
 
 namespace Battleship
 {
@@ -150,8 +140,6 @@ namespace Battleship
             var response4 = GetCoordinate();
 
             string[] coordinates = { response1, response2, response3, response4 };
-            Console.WriteLine("Current coordinate set:");
-            foreach (string coord in coordinates) { Console.WriteLine(coord); }
             bool placed = PlaceShip(coordinates, ship);
             if ( !placed ) { Console.WriteLine($"{ship.name} couldn't be placed. Please try again.");  PlayerPlaceShipSeq(); } // this is another infinite loop of broken responses
         }
@@ -166,8 +154,6 @@ namespace Battleship
         {
             // this needs refactoring
             bool validation = true;
-            Console.WriteLine("coordinates to check:");
-            foreach (string coord in coordinates) { Console.WriteLine(coord); }
             if (coordinates.Length != ship.length) { Console.WriteLine("Number of coordinates provided doesn't match the ship's length."); validation = false; }
             if (CheckCoords(coordinates) is false) { Console.WriteLine("That ship cannot be placed in that way."); return false; }
             
