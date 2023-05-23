@@ -120,28 +120,45 @@ namespace Battleship
             else { CPUPlaceShipSeq(); }
         }
 
+        /// <summary>
+        /// A human player's ship placement sequence. 
+        /// </summary>
         public void PlayerPlaceShipSeq() 
-            // todo: add ship argument
-            // once the ship argument is added, it should no longer create one
         {
             AvailableCells();
-            Ship ship = new(4, "Battleship");
+            Ship battleship = new(4, "Battleship");
+            Ship patrol = new(2, "Patrol Boat");
+            Ship carrier = new(5, "Aircraft Carrier");
+            Ship cruiser = new(3, "Cruiser");
+            Ship submarine = new(3, "Submarine");
 
-            Console.WriteLine($"Please choose the first coordinate for your {ship.Name}: ");
-            var response1 = GetCoordinate();
+            PlayerPlaceShip(battleship);
+            PlayerPlaceShip(patrol);
+            PlayerPlaceShip(carrier);
+            PlayerPlaceShip(cruiser);
+            PlayerPlaceShip(submarine);
+            Console.WriteLine($"Player {Owner.name}\'s ships have been placed.");
+        }
 
-            Console.WriteLine($"Please choose the second coordinate for your {ship.Name}: ");
-            var response2 = GetCoordinate();
+        /// <summary>
+        /// Gathers coordinates and sets the given ship to be placed.
+        /// </summary>
+        /// <param name="ship">The ship to be placed.</param>
+        public void PlayerPlaceShip(Ship ship)
+        {
+            List<string> responses = new();
+            string[] order = { "first", "second", "third", "fourth", "fifth"};
+            for (int i = 0; i < ship.length; i++)
+            {
+                Console.WriteLine($"Please choose the {order.GetValue(i)} coordinate for your {ship.Name}: ");
+                string response = GetCoordinate();
+                responses.Add(response);
+            }
 
-            Console.WriteLine($"Please choose the third coordinate for your {ship.Name}: ");
-            var response3 = GetCoordinate();
-
-            Console.WriteLine($"Please choose the fourth coordinate for your {ship.Name}: ");
-            var response4 = GetCoordinate();
-
-            string[] coordinates = { response1, response2, response3, response4 };
+            string[] coordinates = responses.ToArray<string>();
+            Console.WriteLine($"{ship.Name} coordinates: {coordinates}");
             bool placed = PlaceShip(coordinates, ship);
-            if ( !placed ) { Console.WriteLine($"{ship.name} couldn't be placed. Please try again.");  PlayerPlaceShipSeq(); } // this is another infinite loop of broken responses
+            if (!placed) { Console.WriteLine($"{ship.name} couldn't be placed. Please try again."); PlayerPlaceShip(ship); }
         }
 
         /// <summary>
@@ -182,7 +199,7 @@ namespace Battleship
             foreach (string coordinate in coordinates)
             {
                 var possibleCells = cells.Where(cell => cell.code == coordinate);
-                if (!possibleCells.Any()) { continue; } // move on to next loop if no cells found
+                if (!possibleCells.Any()) { continue; }
                 Cell cellPoss = possibleCells.First();
                 
                 var index = Array.FindIndex(cells, cell => cell == cellPoss);
@@ -191,8 +208,7 @@ namespace Battleship
 
             indices.Sort();
             indices = indices.Distinct().ToList<int>();
-            if (!indices.Any()) { Console.WriteLine("Indices empty"); return false; }
-            else if (indices.Count != coordinates.Length) { return false; }
+            if (indices.Count != coordinates.Length) { return false; }
 
             List<int> remainders = indices.Select(item => item % width).Distinct().ToList<int>(); // this is a horizontal placement check
             List<int> results = indices.Select(item => item / width).Distinct().ToList<int>(); // this is a vertical placement check
