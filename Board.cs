@@ -64,24 +64,19 @@ namespace Battleship
         }
 
         /// <summary>
-        /// Calculates the cells that the user COULD place a ship into.
+        /// Calculates the cells that the user could place a ship into.
         /// </summary>
         /// <returns>A string with all of the valid cell codes.</returns>
-        public string AvailableCells()
+        public void AvailableCells()
         {
-            string codeList = "";
-
-            var cellPoss = cells.Where(x => x.status == "open");
+            Dictionary<string, string> targets = new();
             foreach (Cell cell in cells)
             {
-                if ( cellPoss.Contains(cell) ) 
-                {
-                    codeList += $"{cell.code} ";
-                }
+                targets.Add(cell.code, cell.status);
             }
-
-            if (codeList.Equals("")) { return "None"; }
-            return codeList;
+            
+            Console.WriteLine("Your board currently looks like this: ");
+            Breakdown(targets);
         }
 
         /// <summary>
@@ -100,14 +95,35 @@ namespace Battleship
         }
 
 
-        public Dictionary<string, string> PlayerPossibleTargets()
+        public void PlayerPossibleTargets()
         {
             Dictionary<string, string> targets = new();
             foreach (Cell cell in cells)
             {
                 targets.Add(cell.code, cell.enemyStatus);
             }
-            return targets;
+
+            Breakdown(targets);
+        }
+
+        private void Breakdown(Dictionary<string, string> statuses)
+        {
+            int i = 1;
+            string boardApprox = "|";
+
+            while (i <= (width * height))
+            {
+                foreach (KeyValuePair<string, string> pair in statuses)
+                {
+                    boardApprox += $" {pair.Key}: {pair.Value} |";
+                    if (i % width == 0)
+                    {
+                        Console.WriteLine(boardApprox);
+                        boardApprox = "|";
+                    }
+                    i++;
+                }
+            }
         }
 
         /// <summary>
@@ -125,7 +141,6 @@ namespace Battleship
         /// </summary>
         public void PlayerPlaceShipSeq() 
         {
-            AvailableCells();
             Ship battleship = new(4, "Battleship");
             Ship patrol = new(2, "Patrol Boat");
             Ship carrier = new(5, "Aircraft Carrier");
@@ -147,16 +162,17 @@ namespace Battleship
         public void PlayerPlaceShip(Ship ship)
         {
             List<string> responses = new();
-            string[] order = { "first", "second", "third", "fourth", "fifth"};
-            for (int i = 0; i < ship.length; i++)
+            string[] order = { "first", "second", "third", "fourth", "fifth" };
+            AvailableCells();
+
+            for (int index = 0; index < ship.length; index++)
             {
-                Console.WriteLine($"Please choose the {order.GetValue(i)} coordinate for your {ship.Name}: ");
+                Console.WriteLine($"Please choose the {order.GetValue(index)} coordinate for your {ship.Name} (length: {ship.length}): ");
                 string response = GetCoordinate();
                 responses.Add(response);
             }
 
             string[] coordinates = responses.ToArray<string>();
-            Console.WriteLine($"{ship.Name} coordinates: {coordinates}");
             bool placed = PlaceShip(coordinates, ship);
             if (!placed) { Console.WriteLine($"{ship.name} couldn't be placed. Please try again."); PlayerPlaceShip(ship); }
         }

@@ -58,26 +58,10 @@ namespace Battleship
         /// </summary>
         private void PlayerTurn()
         {
-            var summary = Player2.Board.PlayerPossibleTargets();
-            int height = Player2.Board.height;
-            int width = Player2.Board.width;
-            int i = 1;
-            string boardApprox = "|";
+            Player1.Board.AvailableCells();
             Console.WriteLine($"{Player1.name}, please enter a cell to fire upon.");
             Console.WriteLine($"Here is what you know about the opponent's board: ('O' means that you have yet to attack that cell)");
-            while (i <= (width * height)) 
-            {
-                foreach (var cell in summary) 
-                {
-                    boardApprox += $" {cell.Key}: {cell.Value} |";
-                    if (i % width == 0) 
-                    {
-                        Console.WriteLine(boardApprox);
-                        boardApprox = "|";
-                    }
-                    i++;
-                }
-            }
+            Player2.Board.PlayerPossibleTargets();
 
             Player2.Board.Fire();
         }
