@@ -12,3 +12,4 @@ Possible features:
 
 Known Bugs:
 * the CPU's ship placements are hard-coded
+* the CPU's attacks are random and could be more targeted (this might require some sort of AI)
