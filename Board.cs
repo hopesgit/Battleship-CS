@@ -16,7 +16,7 @@ namespace Battleship
             this.height = height;
             this.width = width;
             this.player = player;
-            
+
             // everything below this HAS to be able to be refactored
             Array alphabet = new string[26] {
                 "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
@@ -24,7 +24,7 @@ namespace Battleship
                 "U", "V", "W", "X", "Y", "Z"
             };
 
-            int[] cell_numbers = Array.Empty<int>(); 
+            int[] cell_numbers = Array.Empty<int>();
             Array.Resize(ref cell_numbers, width);
 
             for (int i = 1; i <= width; i++)
@@ -38,7 +38,7 @@ namespace Battleship
 
             foreach (int i in cell_numbers)
             {
-                cell_letters.SetValue(alphabet.GetValue(i-1), i-1);
+                cell_letters.SetValue(alphabet.GetValue(i - 1), i - 1);
             }
 
             int total_cells = width * height;
@@ -58,9 +58,9 @@ namespace Battleship
             }
         }
 
-        public Player Owner 
-        { 
-            get { return player; } 
+        public Player Owner
+        {
+            get { return player; }
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Battleship
             {
                 targets.Add(cell.code, cell.status);
             }
-            
+
             Console.WriteLine("Your board currently looks like this: ");
             Breakdown(targets);
         }
@@ -139,7 +139,7 @@ namespace Battleship
         /// <summary>
         /// A human player's ship placement sequence. 
         /// </summary>
-        public void PlayerPlaceShipSeq() 
+        public void PlayerPlaceShipSeq()
         {
             Ship battleship = new(4, "Battleship");
             Ship patrol = new(2, "Patrol Boat");
@@ -189,7 +189,7 @@ namespace Battleship
             bool validation = true;
             if (coordinates.Length != ship.length) { Console.WriteLine("Number of coordinates provided doesn't match the ship's length."); validation = false; }
             if (CheckCoords(coordinates) is false) { Console.WriteLine("That ship cannot be placed in that way."); return false; }
-            
+
             foreach (string coordinate in coordinates)
             {
                 var cellPoss = cells.Where(cell => cell.code == coordinate);
@@ -205,7 +205,7 @@ namespace Battleship
                 else if (placed) { ship.cells = ship.cells.Append(selectedCell).ToArray(); }
             }
 
-            ships.Add( ship ); // adding the ship to the ships list for the board certifies that it has been placed correctly
+            ships.Add(ship); // adding the ship to the ships list for the board certifies that it has been placed correctly
             return validation;
         }
 
@@ -217,7 +217,7 @@ namespace Battleship
                 var possibleCells = cells.Where(cell => cell.code == coordinate);
                 if (!possibleCells.Any()) { continue; }
                 Cell cellPoss = possibleCells.First();
-                
+
                 var index = Array.FindIndex(cells, cell => cell == cellPoss);
                 indices.Add(index);
             }
@@ -230,12 +230,12 @@ namespace Battleship
             List<int> results = indices.Select(item => item / width).Distinct().ToList<int>(); // this is a vertical placement check
 
             int columnCountCheck = 1;
-            if (remainders.Count == 1) {  columnCountCheck = 0; }
+            if (remainders.Count == 1) { columnCountCheck = 0; }
             else if (remainders.Count == coordinates.Length) { columnCountCheck = 2; }
 
             int rowCountCheck = 1;
-            if (results.Count == 1) {  rowCountCheck = 0; }
-            else if (results.Count == coordinates.Length) { rowCountCheck= 2; }
+            if (results.Count == 1) { rowCountCheck = 0; }
+            else if (results.Count == coordinates.Length) { rowCountCheck = 2; }
 
             bool verticalCheck = columnCountCheck == 0 && rowCountCheck == 2;
             bool horizontalCheck = columnCountCheck == 2 && rowCountCheck == 0;
@@ -243,8 +243,8 @@ namespace Battleship
             int firstItem = indices.First();
             int firstItemModulo = firstItem % width;
             bool dummy = indices.Select((value, index) => value - index * width == firstItem).All(item => item == true);
-            bool shipVertical = indices.All(index => index % width == firstItemModulo) && ( dummy && verticalCheck); // this should check if the cells chosen are in the same column but different rows
-            bool shipHorizontal = indices.Select((value, index) => value - index == firstItem).All(item => item == true) && horizontalCheck; 
+            bool shipVertical = indices.All(index => index % width == firstItemModulo) && (dummy && verticalCheck); // this should check if the cells chosen are in the same column but different rows
+            bool shipHorizontal = indices.Select((value, index) => value - index == firstItem).All(item => item == true) && horizontalCheck;
             // this should check if the current set of coordinates are in sequence
             // they should also all be on the same row
 
@@ -266,10 +266,10 @@ namespace Battleship
             string? response = Console.ReadLine();
             InputSanitizer sanit = new();
             string coordinate = String.Empty;
-            try 
-            { 
+            try
+            {
 #pragma warning disable CS8604 // Possible null reference argument.
-                string corrected_coordinate = sanit.CoordinateInput(response); 
+                string corrected_coordinate = sanit.CoordinateInput(response);
 #pragma warning restore CS8604 // Possible null reference argument.
                 coordinate = corrected_coordinate;
             }
@@ -283,7 +283,7 @@ namespace Battleship
         }
 
         public void CPUPlaceShipSeq()
-            // todo: code this more flexibly
+        // todo: code this more flexibly
         {
             Ship battleship = new(4, "Battleship");
             Ship patrol = new(2, "Patrol Boat");
@@ -296,13 +296,13 @@ namespace Battleship
             string[] carrierCoords = new string[] { "A1", "B1", "C1", "D1", "E1" };
             string[] battleshipCoords = new string[] { "A2", "A3", "A4", "A5" };
             string[] cruiserCoords = new string[] { "B2", "B3", "B4" };
-            string[] submarineCoords = new string[] {"D2", "D3", "D4"};
+            string[] submarineCoords = new string[] { "D2", "D3", "D4" };
             string[] patrolCoords = new string[] { "D5", "E5" };
 
             PlaceShip(battleshipCoords, battleship);
             PlaceShip(patrolCoords, patrol);
             PlaceShip(carrierCoords, carrier);
-            PlaceShip(cruiserCoords, cruiser); 
+            PlaceShip(cruiserCoords, cruiser);
             PlaceShip(submarineCoords, submarine);
         }
 
@@ -310,12 +310,12 @@ namespace Battleship
         {
             string response = GetCoordinate();
             Cell? cell = cells.Where(x => x.code == response).FirstOrDefault();
-            if (cell == null) 
+            if (cell == null)
             {
                 Console.WriteLine("Cell not found. Please try again. ");
                 Fire();
             }
-            else if (cell != null & !cell.ValidTarget()) 
+            else if (cell != null & !cell.ValidTarget())
             {
                 Console.WriteLine("Cell has already been struck. Please try another. ");
                 Fire();
@@ -349,7 +349,7 @@ namespace Battleship
                 Console.WriteLine($"It was a {cell.status}!");
                 Ship? ship = cell.ship;
                 bool sunk = ship?.Sunk() ?? false;
-                if (cell.status == "hit" & sunk) { Console.WriteLine($"You sank my {ship.name}!"); } 
+                if (cell.status == "hit" & sunk) { Console.WriteLine($"You sank my {ship.name}!"); }
             }
         }
 

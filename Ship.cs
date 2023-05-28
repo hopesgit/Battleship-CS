@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Battleship
+﻿namespace Battleship
 {
     internal class Ship
     {
@@ -34,6 +28,6 @@ namespace Battleship
             int cellCount = cells.Where(x => x.status == "hit").Count();
             if (cellCount.Equals(cells.Length)) { this.sunk = true; } // update sunken status if sunk is false and it should be true
             return this.sunk;
-        } 
+        }
     }
 }

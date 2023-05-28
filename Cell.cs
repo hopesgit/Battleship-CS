@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Battleship
+﻿namespace Battleship
 {
     internal class Cell
     {
@@ -30,7 +24,7 @@ namespace Battleship
         /// <returns>Boolean that reflects whether the ship could be placed or not.</returns>
         public bool PlaceShip(Ship ship)
         {
-            switch(status)
+            switch (status)
             {
                 case "open":
                     status = "ship";
@@ -91,9 +85,9 @@ namespace Battleship
             enemyStatus = status switch
             {
                 "hit" => "H",
-				"miss" => "M",
-				_ => "O",
-			};
+                "miss" => "M",
+                _ => "O",
+            };
         }
     }
 }

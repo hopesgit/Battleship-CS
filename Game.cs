@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-
-namespace Battleship
+﻿namespace Battleship
 {
     internal class Game
     {
@@ -37,7 +30,7 @@ namespace Battleship
         /// <summary>
         /// The meat of the game is here. This runs the turn functions. 
         /// </summary>
-        private void Run() 
+        private void Run()
         {
             int turn = 0;
             while (turn < (Player1.Board.height * Player1.Board.width))
@@ -45,7 +38,7 @@ namespace Battleship
                 ++turn;
                 Console.WriteLine($"~~~ Beginning turn {turn} ~~~");
                 PlayerTurn();
-                if (EvaluateWinner() is not null) { break; } 
+                if (EvaluateWinner() is not null) { break; }
                 CPUTurn();
                 if (EvaluateWinner() is not null) { break; }
             }

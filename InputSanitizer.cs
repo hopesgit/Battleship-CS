@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Battleship
+﻿namespace Battleship
 {
     internal class InputSanitizer
     {
@@ -12,7 +6,7 @@ namespace Battleship
         {
             Console.WriteLine($"\"{input}\"");
             if (input == null | input == String.Empty) { throw new ArgumentException("Invalid placement. Please try again."); }
-            else 
+            else
             {
                 string upper = input.ToUpper();
                 return upper;

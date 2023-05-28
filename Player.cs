@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Battleship
+﻿namespace Battleship
 
 {
     internal class Player
@@ -23,7 +17,8 @@ namespace Battleship
             if (!human)
             {
                 this.name = UpdateName();
-            } else
+            }
+            else
             {
                 this.name = "Player1";
             }
