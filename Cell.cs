@@ -1,11 +1,12 @@
 ﻿namespace Battleship
 {
-    internal class Cell
+    public class Cell
     {
         public string code;
         public string status = "open";
         public Ship? ship;
         public string enemyStatus = "O";
+        public Strike? strike;
 
         /// <summary>
         /// Constructor. Create a Cell with this.

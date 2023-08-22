@@ -1,12 +1,13 @@
 ﻿namespace Battleship
 
 {
-    internal class Player
+    public class Player
     {
         public string name;
         public bool human;
         public bool winner = false;
         public Board board;
+        public List<Strike> previousMoves = new();
 
         /// <summary>
         /// Constructor for a Player object. Human or CPU, both are considered Players.
@@ -31,10 +32,10 @@
         /// <returns>The string that will be used to rename the CPU player.</returns>
         public string UpdateName() // this cannot be static because it then wouldn't be usable in the constructor above
         {
-            Array array = new string[4] { "Bethany", "Mona", "Eric", "Alexander" };
+            string[] names = new Constants().CPU_NAMES;
             Random rand = new();
-            int index = rand.Next(array.Length);
-            return array.GetValue(index).ToString();
+            int index = rand.Next(names.Length);
+            return names.GetValue(index).ToString();
         }
 
         /// <summary>

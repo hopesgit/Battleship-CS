@@ -1,6 +1,9 @@
-﻿namespace Battleship
+﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography;
+
+namespace Battleship
 {
-    internal class Game
+    public class Game
     {
         public string Name = "Battleship";
         public Player Player1 = new(human: true); // create player 1
@@ -65,12 +68,57 @@
         private void CPUTurn()
         {
             Console.WriteLine("The CPU is taking its turn...");
+            // selected is the holder object for the chosen coordinate
+            string selected;
+
+            // record the last 5 moves made by the CPU
+            var lastFiveMoves = Player2.previousMoves.TakeLast(5);
+            // if LFM is NOT empty and ANY of the LFM were hits
+            if (lastFiveMoves is not null && lastFiveMoves.Any(x => x.hit)) {
+                // keep only the strikes where there are any remaining hits that did NOT cause a sinking
+                List<Strike> filteredLastFive = lastFiveMoves.Where(x => x.hit && !x.sunk).ToList();
+
+                // if, after filtering, there are no remaining hits...
+                if (!filteredLastFive.Any()) 
+                {
+                    selected = CPURandomAttack();
+                } 
+                else
+                {
+                    // take the last remaining hit
+                    // check to see if any of its surrounding tiles are available to attack
+                    // if so:
+                    // choose one of those
+                    // if not:
+                    // check the next one in the list
+                    // if there are no more hits in the list:
+
+                    //string validCoordinate = filteredLastFive.rng.Next(filteredLastFive.Count);
+                    //Cell cell = Player1.Board.cells.Where(x => x.code == validCoordinate).Last();
+                    //string[] orbit = Array.Empty<string>();
+                    //selected = ;
+
+                    // temporary
+                    selected = CPURandomAttack();
+                }
+            }
+            // if lastFiveMoves is empty OR all of the previous moves missed
+            else {
+                selected = CPURandomAttack();
+            }
+
+            Console.WriteLine($"The CPU has chosen {selected}.");
+            Strike strike = Player1.Board.Fire(selected);
+            Player2.previousMoves.Add(strike);
+        }
+
+        private string CPURandomAttack()
+        {
             string[] targets = Player1.Board.PossibleTargets();
             Random rand = new();
             int index = rand.Next(targets.Length);
             string selected = targets.GetValue(index).ToString();
-            Console.WriteLine($"The CPU has chosen {selected}.");
-            Player1.Board.Fire(selected);
+            return selected;
         }
 
         private Player? EvaluateWinner()

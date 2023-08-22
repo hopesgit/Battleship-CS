@@ -1,8 +1,9 @@
 ﻿using System.Data;
+using System.Runtime.InteropServices;
 
 namespace Battleship
 {
-    internal class Board
+    public class Board
     {
         public Cell[] cells = Array.Empty<Cell>();
         public string[] cellCodes = Array.Empty<string>();
@@ -330,7 +331,7 @@ namespace Battleship
             }
         }
 
-        public void Fire(string coordinate)
+        public Strike? Fire(string coordinate)
         {
             Cell? cell = cells.Where(x => x.code == coordinate).FirstOrDefault();
             if (cell == null)
@@ -350,7 +351,13 @@ namespace Battleship
                 Ship? ship = cell.ship;
                 bool sunk = ship?.Sunk() ?? false;
                 if (cell.status == "hit" & sunk) { Console.WriteLine($"You sank my {ship.name}!"); }
+                bool hit = false;
+                if (cell.status == "hit") { hit = true; }
+                Strike strike = new Strike(cell.code, hit, sunk);
+                cell.strike = strike;
+                return strike;
             }
+            return null;
         }
 
         public bool OutOfShips()
